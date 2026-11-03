@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#0d1226">
+<title>Comet Keeper</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+<style>
+:root{--bg:#0d1226;--panel:#171e3d;--line:#2d3869;--text:#eaf0ff;--muted:#93a0cf;--shield:#ff7a59;--gold:#ffd166;--ice:#7fd8ff;
+--f:"Trebuchet MS",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--f);overscroll-behavior:none;overflow:hidden}
+#app{position:relative;max-width:520px;height:100%;margin:0 auto;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
+canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
+#hud{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0);display:flex;justify-content:space-between;padding:14px 16px;pointer-events:none;font-weight:700;font-variant-numeric:tabular-nums}
+#hud .sc{font-size:34px;line-height:1}#hud small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:4px}
+#hearts{color:var(--shield);font-size:22px;letter-spacing:2px;text-align:right}#slow{color:var(--ice);font-size:13px;text-align:right}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:10px;padding:24px;background:rgba(9,13,30,.88);overflow-y:auto}
+.screen.on{display:flex}
+h1{margin:0;font-size:38px;letter-spacing:.5px}h2{margin:0 0 4px;font-size:24px}
+p{margin:0;color:#c3ccee;font-size:14px;line-height:1.5}.muted{color:var(--muted)}
+.btn{display:block;width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:700 16px var(--f);cursor:pointer;text-align:center}
+.btn.go{background:var(--shield);border-color:var(--shield);color:#2c0e05}
+.btn:disabled{opacity:.45;cursor:default}
+.btn small{display:block;font-weight:500;font-size:12px;opacity:.8;margin-top:2px}
+.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
+.row .t{flex:1}.row .t b{display:block}.row .t span{font-size:13px;color:var(--muted)}
+.row .btn{width:auto;padding:9px 14px;font-size:14px}
+.big{font-size:56px;font-weight:700;line-height:1}
+.opt{border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
+#toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:#232d5a;border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;text-align:center;max-width:88%}
+#toast.on{opacity:1}
+button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<div id="app">
+  <canvas id="cv" aria-label="Game area: drag to turn the shield"></canvas>
+  <div id="hud"><div><div class="sc" id="sc">0</div><small id="cmb">Combo ×1</small></div><div><div id="hearts"></div><div id="slow"></div></div></div>
+
+  <div class="screen on" id="menu">
+    <h1>Comet Keeper</h1>
+    <p>Guard your planet. Drag your finger around it to turn the shield and bounce every comet away. Golden comets give coins, icy comets slow time.</p>
+    <p class="muted" id="menuStat"></p>
+    <button class="btn go" id="play">Play</button>
+    <button class="btn" id="goShop">Shield workshop</button>
+    <button class="btn" id="daily">Daily coins</button>
+    <button class="btn" id="goAbout">About, privacy and terms</button>
+  </div>
+
+  <div class="screen" id="shop">
+    <h2>Shield workshop</h2>
+    <p class="muted">Spend coins you earn by playing. Coins have no cash value.</p>
+    <div id="shoplist"></div>
+    <button class="btn" data-back>Back</button>
+  </div>
+
+  <div class="screen" id="over">
+    <p class="muted">Planet lost</p>
+    <div class="big" id="oScore">0</div>
+    <p id="oInfo"></p>
+    <button class="btn go" id="again">Play again</button>
+    <div class="opt">
+      <p class="muted" style="margin-bottom:8px">Optional bonuses. The game works fully without ads.</p>
+      <button class="btn" id="adRevive">Watch an ad: continue this run<small>Restores 1 life, once per run</small></button>
+      <button class="btn" id="adDouble" style="margin-top:8px">Watch an ad: double this run’s coins</button>
+    </div>
+    <button class="btn" data-back>Menu</button>
+  </div>
+
+  <div class="screen" id="about">
+    <h2>About Comet Keeper</h2>
+    <p>An arcade skill game. Coins and scores are in-game points only. They have no cash value and cannot be withdrawn or exchanged.</p>
+    <h2 style="font-size:17px;margin-top:8px">Ads</h2>
+    <p>Ads appear only after you press a button that says “Watch an ad”, on the game over screen. You get the bonus after the ad finishes. You never need an ad to play. Ads are provided by AdsGram.</p>
+    <h2 style="font-size:17px;margin-top:8px">Privacy</h2>
+    <p>Progress is saved on your device. Your Telegram user ID is used only to keep your save separate. We do not sell personal data. AdsGram may process data under its own privacy policy.</p>
+    <h2 style="font-size:17px;margin-top:8px">Terms</h2>
+    <p>Provided as is, for entertainment. Cheating or automated play may be blocked. Contact: @cometkeeper11_bot</p>
+    <button class="btn" data-back>Back</button>
+  </div>
+  <div id="toast" role="status"></div>
+</div>
+
+<script>
+(function(){
+"use strict";
+var ADSGRAM_BLOCK_ID = "YOUR_ADSGRAM_BLOCK_ID"; /* paste your reward block ID from the AdsGram dashboard */
+var AD_COOLDOWN_MS = 45000;
+
+var TG = window.Telegram && window.Telegram.WebApp;
+if (TG) {
+  try { TG.ready(); TG.expand(); } catch(e){}
+  try { TG.disableVerticalSwipes && TG.disableVerticalSwipes(); TG.setHeaderColor && TG.setHeaderColor("#0d1226"); TG.setBackgroundColor && TG.setBackgroundColor("#0d1226"); } catch(e){}
+}
+var uid = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.id) || "local";
+var KEY = "cometkeeper_v1_" + uid;
+function $(i){ return document.getElementById(i); }
+function haptic(k){ try { TG && TG.HapticFeedback && TG.HapticFeedback.impactOccurred(k); } catch(e){} }
+function today(){ return new Date().toISOString().slice(0,10); }
+
+var s = {coins:0,best:0,games:0,up:{arc:0,life:0,slow:0},daily:"",adAt:0};
+try { var p = JSON.parse(localStorage.getItem(KEY) || "null"); if (p) { s = Object.assign(s, p); s.up = Object.assign({arc:0,life:0,slow:0}, p.up||{}); } } catch(e){}
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} }
+var tt; function toast(m){ var t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove("on");},2600); }
+
+/* ===== screens ===== */
+function show(id){ ["menu","shop","over","about"].forEach(function(n){ $(n).classList.toggle("on", n===id); }); if (id==="menu") menuStat(); if (id==="shop") renderShop(); }
+function menuStat(){ $("menuStat").textContent = "Best score " + s.best + "   ·   Coins " + s.coins; }
+document.querySelectorAll("[data-back]").forEach(function(b){ b.addEventListener("click", function(){ show("menu"); }); });
+$("goShop").onclick = function(){ show("shop"); };
+$("goAbout").onclick = function(){ show("about"); };
+$("daily").onclick = function(){
+  if (s.daily === today()) { toast("Already claimed today. Come back tomorrow."); return; }
+  s.daily = today(); s.coins += 50; save(); menuStat(); toast("Daily bonus: +50 coins");
+};
+
+/* ===== shop ===== */
+var UPS = [
+  {id:"arc",  n:"Wider shield",   d:"Bigger shield arc",           base:60,  g:1.8, max:8},
+  {id:"life", n:"Extra planet shield", d:"+1 starting life",       base:120, g:2.1, max:3},
+  {id:"slow", n:"Longer slow-time", d:"Icy comets slow time longer", base:80, g:1.7, max:6}
+];
+function ucost(u){ return Math.floor(u.base * Math.pow(u.g, s.up[u.id])); }
+function renderShop(){
+  var h = '<p style="margin-bottom:6px">Coins: <b>' + s.coins + '</b></p>';
+  UPS.forEach(function(u){
+    var lv = s.up[u.id], maxed = lv >= u.max, c = ucost(u);
+    h += '<div class="row"><div class="t"><b>' + u.n + ' (level ' + lv + '/' + u.max + ')</b><span>' + u.d + '</span></div>' +
+         '<button class="btn" data-buy="' + u.id + '"' + (maxed || s.coins < c ? " disabled" : "") + '>' + (maxed ? "Max" : c) + '</button></div>';
+  });
+  $("shoplist").innerHTML = h;
+}
+$("shoplist").addEventListener("click", function(e){
+  var b = e.target.closest("[data-buy]"); if (!b) return;
+  var u = UPS.filter(function(x){ return x.id === b.getAttribute("data-buy"); })[0], c = ucost(u);
+  if (s.up[u.id] >= u.max || s.coins < c) return;
+  s.coins -= c; s.up[u.id] += 1; save(); haptic("medium"); renderShop();
+});
+
+/* ===== canvas ===== */
+var cv = $("cv"), ctx = cv.getContext("2d"), w, h, M, cx, cy, dpr;
+function fit(){ dpr = Math.min(2, window.devicePixelRatio || 1); w = cv.clientWidth; h = cv.clientHeight; cv.width = w*dpr; cv.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); M = Math.min(w,h); cx = w/2; cy = h/2; }
+window.addEventListener("resize", fit); fit();
+var stars = []; for (var i=0;i<70;i++) stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.3,p:Math.random()*6});
+
+var g = null, target = -Math.PI/2, running = false;
+function lives0(){ return 3 + s.up.life; }
+function start(){
+  g = {score:0,lives:lives0(),time:0,combo:0,comets:[],parts:[],ang:target,slowT:0,spawn:.6,revived:false,doubled:false,earned:0,golds:0,shake:0};
+  running = true; ["menu","shop","over","about"].forEach(function(n){ $(n).classList.remove("on"); }); hud();
+}
+function hud(){
+  $("sc").textContent = g ? g.score : 0;
+  var m = g ? 1 + Math.min(4, Math.floor(g.combo/5)) : 1; $("cmb").textContent = "Combo ×" + m;
+  var hs = ""; if (g) for (var i=0;i<g.lives;i++) hs += "♥"; $("hearts").textContent = hs;
+  $("slow").textContent = g && g.slowT > 0 ? "Slow time " + Math.ceil(g.slowT) + "s" : "";
+}
+function pos(e){ var r = cv.getBoundingClientRect(); target = Math.atan2(e.clientY - r.top - cy, e.clientX - r.left - cx); }
+cv.addEventListener("pointerdown", function(e){ e.preventDefault(); pos(e); });
+cv.addEventListener("pointermove", function(e){ pos(e); });
+
+function burst(x, y, col, n){ for (var i=0;i<n;i++){ var a=Math.random()*6.283, v=40+Math.random()*120; g.parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:col}); } }
+function adiff(a,b){ return Math.atan2(Math.sin(a-b), Math.cos(a-b)); }
+
+function spawn(){
+  var r = Math.random(), type = r < .08 ? "gold" : (r < .13 ? "ice" : "rock");
+  var sp = Math.min(.8*M, .17*M + g.time*.0042*M) * (.85 + Math.random()*.35);
+  g.comets.push({a:Math.random()*6.283, r:Math.hypot(w,h)/2 + 24, sp:sp, t:type});
+}
+function update(dt){
+  g.time += dt;
+  var cs = g.slowT > 0 ? .5 : 1; if (g.slowT > 0) g.slowT -= dt;
+  g.spawn -= dt;
+  if (g.spawn <= 0) { spawn(); g.spawn = Math.max(.32, 1.05 - g.time*.011) * (.8 + Math.random()*.5); }
+  var d = adiff(target, g.ang), mx = 9*dt; g.ang += Math.max(-mx, Math.min(mx, d));
+  var R0 = .07*M, Rs = .17*M, half = .35 + .07*s.up.arc;
+  for (var i=g.comets.length-1;i>=0;i--){
+    var c = g.comets[i]; c.r -= c.sp*cs*dt;
+    var x = cx + Math.cos(c.a)*c.r, y = cy + Math.sin(c.a)*c.r;
+    if (c.r <= Rs + 8 && c.r > R0) {
+      if (Math.abs(adiff(c.a, g.ang)) <= half) {
+        g.combo++; var m = 1 + Math.min(4, Math.floor(g.combo/5));
+        g.score += 10*m;
+        if (c.t === "gold") { g.golds++; g.score += 20; }
+        if (c.t === "ice") g.slowT = 4 + s.up.slow;
+        burst(x, y, c.t === "gold" ? "#ffd166" : (c.t === "ice" ? "#7fd8ff" : "#ff7a59"), 10);
+        haptic("light"); g.comets.splice(i,1); continue;
+      }
+    }
+    if (c.r <= R0 + 6) {
+      g.lives--; g.combo = 0; g.shake = .3; burst(x, y, "#ff5a4d", 16); haptic("heavy"); g.comets.splice(i,1);
+      if (g.lives <= 0) { over(); return; }
+    }
+  }
+  for (var j=g.parts.length-1;j>=0;j--){ var q = g.parts[j]; q.x += q.vx*dt; q.y += q.vy*dt; q.l -= dt; if (q.l <= 0) g.parts.splice(j,1); }
+  if (g.shake > 0) g.shake -= dt;
+  hud();
+}
+function over(){
+  running = false;
+  g.earned = Math.floor(g.score/10) + g.golds*5;
+  s.coins += g.earned; s.games++; if (g.score > s.best) s.best = g.score; save();
+  $("oScore").textContent = g.score;
+  $("oInfo").textContent = "Best " + s.best + "  ·  +" + g.earned + " coins";
+  $("adRevive").disabled = false; $("adRevive").hidden = g.revived;
+  $("adDouble").disabled = g.earned <= 0; $("adDouble").hidden = g.doubled;
+  $("over").classList.add("on");
+}
+
+/* ===== drawing ===== */
+var last = 0;
+function draw(t){
+  var dt = Math.min(.05, (t - last)/1000 || 0); last = t;
+  if (running && g) update(dt);
+  ctx.save();
+  var gr = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(w,h)*.7);
+  gr.addColorStop(0, "#1c2250"); gr.addColorStop(1, "#0b0f22");
+  ctx.fillStyle = gr; ctx.fillRect(0,0,w,h);
+  stars.forEach(function(st){ ctx.globalAlpha = .45 + .4*Math.sin(t/900 + st.p); ctx.fillStyle = "#cfd8ff"; ctx.beginPath(); ctx.arc(st.x*w, st.y*h, st.r, 0, 6.283); ctx.fill(); });
+  ctx.globalAlpha = 1;
+  if (g && g.shake > 0) ctx.translate((Math.random()-.5)*8, (Math.random()-.5)*8);
+  var R0 = .07*M, Rs = .17*M;
+  var pg = ctx.createRadialGradient(cx - R0*.3, cy - R0*.3, 2, cx, cy, R0);
+  pg.addColorStop(0, "#7ee0c9"); pg.addColorStop(1, "#1f7d8c");
+  ctx.shadowColor = "#4fd1c5"; ctx.shadowBlur = 24; ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(cx, cy, R0, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
+  if (g) {
+    var half = .35 + .07*s.up.arc;
+    ctx.strokeStyle = "rgba(255,122,89,.18)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, Rs, 0, 6.283); ctx.stroke();
+    ctx.strokeStyle = "#ff7a59"; ctx.lineWidth = 9; ctx.lineCap = "round"; ctx.shadowColor = "#ff7a59"; ctx.shadowBlur = 14;
+    ctx.beginPath(); ctx.arc(cx, cy, Rs, g.ang - half, g.ang + half); ctx.stroke(); ctx.shadowBlur = 0;
+    g.comets.forEach(function(c){
+      var x = cx + Math.cos(c.a)*c.r, y = cy + Math.sin(c.a)*c.r, col = c.t === "gold" ? "#ffd166" : (c.t === "ice" ? "#7fd8ff" : "#d9dff7");
+      var tx = cx + Math.cos(c.a)*(c.r + 34), ty = cy + Math.sin(c.a)*(c.r + 34);
+      var lg = ctx.createLinearGradient(x, y, tx, ty); lg.addColorStop(0, col); lg.addColorStop(1, "rgba(255,255,255,0)");
+      ctx.strokeStyle = lg; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(tx,ty); ctx.stroke();
+      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, c.t === "rock" ? 7 : 8, 0, 6.283); ctx.fill();
+    });
+    g.parts.forEach(function(q){ ctx.globalAlpha = Math.max(0, q.l*2); ctx.fillStyle = q.c; ctx.fillRect(q.x-2, q.y-2, 4, 4); });
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  requestAnimationFrame(draw);
+}
+requestAnimationFrame(draw);
+
+/* ===== optional rewarded ads (AdsGram) ===== */
+var ad = null;
+try { if (window.Adsgram && ADSGRAM_BLOCK_ID.indexOf("YOUR_") !== 0) ad = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID }); } catch(e){}
+function showAd(done){
+  if (Date.now() - s.adAt < AD_COOLDOWN_MS) { toast("Please wait a moment before the next ad."); return; }
+  if (!ad) { toast("Ads are not available right now."); return; }
+  ad.show().then(function(r){ if (r && r.done) { s.adAt = Date.now(); done(); save(); } else toast("Watch the full ad to get the bonus."); })
+    .catch(function(){ toast("No ad available right now. Try again soon."); });
+}
+$("adRevive").onclick = function(){
+  showAd(function(){
+    g.revived = true; g.lives = 1; g.comets = []; g.spawn = 1.2;
+    s.coins -= g.earned * (g.doubled ? 2 : 1); g.doubled = false; s.games = Math.max(0, s.games - 1); /* coins are paid again when this run ends */
+    running = true; $("over").classList.remove("on"); hud();
+  });
+};
+$("adDouble").onclick = function(){
+  showAd(function(){ if (g.doubled) return; g.doubled = true; s.coins += g.earned; $("oInfo").textContent = "Best " + s.best + "  ·  +" + (g.earned*2) + " coins"; $("adDouble").hidden = true; toast("Coins doubled"); });
+};
+$("play").onclick = start;
+$("again").onclick = start;
+document.addEventListener("visibilitychange", function(){ if (document.hidden) save(); });
+menuStat();
+})();
+</script>
+</body>
+</html>
