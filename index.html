@@ -1,275 +1,625 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#0d1226">
-<title>Comet Keeper</title>
-<script src="https://telegram.org/js/telegram-web-app.js"></script>
-<script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-<style>
-:root{--bg:#0d1226;--panel:#171e3d;--line:#2d3869;--text:#eaf0ff;--muted:#93a0cf;--shield:#ff7a59;--gold:#ffd166;--ice:#7fd8ff;
---f:"Trebuchet MS",ui-rounded,system-ui,-apple-system,"Segoe UI",sans-serif}
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{height:100%;margin:0;background:var(--bg);color:var(--text);font-family:var(--f);overscroll-behavior:none;overflow:hidden}
-#app{position:relative;max-width:520px;height:100%;margin:0 auto;padding:env(safe-area-inset-top,0) 0 env(safe-area-inset-bottom,0)}
-canvas{position:absolute;inset:0;width:100%;height:100%;touch-action:none;display:block}
-#hud{position:absolute;left:0;right:0;top:env(safe-area-inset-top,0);display:flex;justify-content:space-between;padding:14px 16px;pointer-events:none;font-weight:700;font-variant-numeric:tabular-nums}
-#hud .sc{font-size:34px;line-height:1}#hud small{display:block;font-size:12px;color:var(--muted);font-weight:600;margin-top:4px}
-#hearts{color:var(--shield);font-size:22px;letter-spacing:2px;text-align:right}#slow{color:var(--ice);font-size:13px;text-align:right}
-.screen{position:absolute;inset:0;display:none;flex-direction:column;justify-content:center;gap:10px;padding:24px;background:rgba(9,13,30,.88);overflow-y:auto}
-.screen.on{display:flex}
-h1{margin:0;font-size:38px;letter-spacing:.5px}h2{margin:0 0 4px;font-size:24px}
-p{margin:0;color:#c3ccee;font-size:14px;line-height:1.5}.muted{color:var(--muted)}
-.btn{display:block;width:100%;padding:14px;border-radius:14px;border:1px solid var(--line);background:var(--panel);color:var(--text);font:700 16px var(--f);cursor:pointer;text-align:center}
-.btn.go{background:var(--shield);border-color:var(--shield);color:#2c0e05}
-.btn:disabled{opacity:.45;cursor:default}
-.btn small{display:block;font-weight:500;font-size:12px;opacity:.8;margin-top:2px}
-.row{display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)}
-.row .t{flex:1}.row .t b{display:block}.row .t span{font-size:13px;color:var(--muted)}
-.row .btn{width:auto;padding:9px 14px;font-size:14px}
-.big{font-size:56px;font-weight:700;line-height:1}
-.opt{border-top:1px solid var(--line);padding-top:12px;margin-top:4px}
-#toast{position:absolute;left:50%;bottom:70px;transform:translateX(-50%);background:#232d5a;border:1px solid var(--line);padding:10px 14px;border-radius:10px;font-size:14px;opacity:0;pointer-events:none;transition:opacity .2s;z-index:9;text-align:center;max-width:88%}
-#toast.on{opacity:1}
-button:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Viral Zone - Watch & Unlock</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        telegram: {
+                            bg: '#0b0716',
+                            card: '#150d2a',
+                            accent: '#a855f7',
+                            purple: '#9333ea',
+                            violet: '#c084fc',
+                            emerald: '#10b981'
+                        }
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 2s infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'bounce-short': 'bounceShort 0.5s ease-in-out 1',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { boxShadow: '0 0 15px rgba(168, 85, 247, 0.4), 0 0 30px rgba(147, 51, 234, 0.2)' },
+                            '50%': { boxShadow: '0 0 25px rgba(192, 132, 252, 0.7), 0 0 50px rgba(168, 85, 247, 0.5)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-6px)' }
+                        },
+                        bounceShort: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.2)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Canvas Confetti CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Telegram WebApp JS -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #0b0716;
+            color: #f3e8ff;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0716;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2e1a47;
+            border-radius: 4px;
+        }
+
+        /* Premium Purple Glassmorphism */
+        .glass-panel {
+            background: rgba(21, 13, 42, 0.75);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(192, 132, 252, 0.15);
+        }
+
+        .glass-card {
+            background: linear-gradient(135deg, rgba(29, 17, 56, 0.85) 0%, rgba(15, 8, 30, 0.95) 100%);
+            backdrop-filter: blur(18px);
+            border: 1px solid rgba(168, 85, 247, 0.18);
+        }
+
+        /* Glowing text effects */
+        .text-glow-purple {
+            text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
+        }
+    </style>
 </head>
-<body>
-<div id="app">
-  <canvas id="cv" aria-label="Game area: drag to turn the shield"></canvas>
-  <div id="hud"><div><div class="sc" id="sc">0</div><small id="cmb">Combo ×1</small></div><div><div id="hearts"></div><div id="slow"></div></div></div>
+<body class="min-h-screen flex flex-col items-center justify-between pb-20 antialiased overflow-x-hidden">
 
-  <div class="screen on" id="menu">
-    <h1>Comet Keeper</h1>
-    <p>Guard your planet. Drag your finger around it to turn the shield and bounce every comet away. Golden comets give coins, icy comets slow time.</p>
-    <p class="muted" id="menuStat"></p>
-    <button class="btn go" id="play">Play</button>
-    <button class="btn" id="goShop">Shield workshop</button>
-    <button class="btn" id="daily">Daily coins</button>
-    <button class="btn" id="goAbout">About, privacy and terms</button>
-  </div>
-
-  <div class="screen" id="shop">
-    <h2>Shield workshop</h2>
-    <p class="muted">Spend coins you earn by playing. Coins have no cash value.</p>
-    <div id="shoplist"></div>
-    <button class="btn" data-back>Back</button>
-  </div>
-
-  <div class="screen" id="over">
-    <p class="muted">Planet lost</p>
-    <div class="big" id="oScore">0</div>
-    <p id="oInfo"></p>
-    <button class="btn go" id="again">Play again</button>
-    <div class="opt">
-      <p class="muted" style="margin-bottom:8px">Optional bonuses. The game works fully without ads.</p>
-      <button class="btn" id="adRevive">Watch an ad: continue this run<small>Restores 1 life, once per run</small></button>
-      <button class="btn" id="adDouble" style="margin-top:8px">Watch an ad: double this run’s coins</button>
+    <!-- Toast Notification Container -->
+    <div id="toast" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 opacity-0 transform -translate-y-4 pointer-events-none">
+        <div class="glass-panel px-4 py-2.5 rounded-full shadow-2xl flex items-center space-x-2 border border-purple-500/40 bg-purple-950/80">
+            <span id="toast-icon" class="text-purple-300"><i class="fas fa-info-circle"></i></span>
+            <span id="toast-msg" class="text-xs font-semibold text-purple-100">Notification message</span>
+        </div>
     </div>
-    <button class="btn" data-back>Menu</button>
-  </div>
 
-  <div class="screen" id="about">
-    <h2>About Comet Keeper</h2>
-    <p>An arcade skill game. Coins and scores are in-game points only. They have no cash value and cannot be withdrawn or exchanged.</p>
-    <h2 style="font-size:17px;margin-top:8px">Ads</h2>
-    <p>Ads appear only after you press a button that says “Watch an ad”, on the game over screen. You get the bonus after the ad finishes. You never need an ad to play. Ads are provided by AdsGram.</p>
-    <h2 style="font-size:17px;margin-top:8px">Privacy</h2>
-    <p>Progress is saved on your device. Your Telegram user ID is used only to keep your save separate. We do not sell personal data. AdsGram may process data under its own privacy policy.</p>
-    <h2 style="font-size:17px;margin-top:8px">Terms</h2>
-    <p>Provided as is, for entertainment. Cheating or automated play may be blocked. Contact: @cometkeeper11_bot</p>
-    <button class="btn" data-back>Back</button>
-  </div>
-  <div id="toast" role="status"></div>
-</div>
+    <!-- Main Container -->
+    <div class="w-full max-w-md mx-auto min-h-screen flex flex-col justify-between p-4 relative">
+        
+        <!-- HEADER BAR -->
+        <header class="w-full flex items-center justify-between py-2 px-1 mb-3">
+            <div class="flex items-center space-x-2">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-purple-700 via-purple-500 to-fuchsia-400 p-[1.5px] flex items-center justify-center shadow-lg shadow-purple-600/30">
+                    <div class="w-full h-full bg-purple-950 rounded-[14px] flex items-center justify-center">
+                        <i class="fas fa-bolt text-purple-300 text-lg animate-pulse"></i>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-extrabold text-base tracking-wide flex items-center gap-1.5">
+                        <span class="bg-gradient-to-r from-purple-200 via-purple-400 to-fuchsia-300 bg-clip-text text-transparent">VIRAL ZONE</span>
+                        <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-400/40 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">VIP</span>
+                    </h1>
+                    <p class="text-[10px] text-purple-300/60 font-medium">Watch 4 Ads to Unlock Exclusive Video</p>
+                </div>
+            </div>
 
-<script>
-(function(){
-"use strict";
-var ADSGRAM_BLOCK_ID = "57735"; /* paste your reward block ID from the AdsGram dashboard */
-var AD_COOLDOWN_MS = 45000;
+            <!-- Lock Counter Badge -->
+            <div class="flex items-center space-x-2">
+                <div class="glass-panel px-3 py-1 rounded-full flex items-center space-x-1.5 border border-purple-400/30 bg-purple-900/30">
+                    <i class="fas fa-shield-halved text-purple-300 text-xs"></i>
+                    <span id="badge-status" class="text-xs font-bold text-purple-200">Locked</span>
+                </div>
+            </div>
+        </header>
 
-var TG = window.Telegram && window.Telegram.WebApp;
-if (TG) {
-  try { TG.ready(); TG.expand(); } catch(e){}
-  try { TG.disableVerticalSwipes && TG.disableVerticalSwipes(); TG.setHeaderColor && TG.setHeaderColor("#0d1226"); TG.setBackgroundColor && TG.setBackgroundColor("#0d1226"); } catch(e){}
-}
-var uid = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.id) || "local";
-var KEY = "cometkeeper_v1_" + uid;
-function $(i){ return document.getElementById(i); }
-function haptic(k){ try { TG && TG.HapticFeedback && TG.HapticFeedback.impactOccurred(k); } catch(e){} }
-function today(){ return new Date().toISOString().slice(0,10); }
+        <!-- MAIN MEDIA CONTENT CARD -->
+        <main class="flex-1 flex flex-col justify-start space-y-4">
 
-var s = {coins:0,best:0,games:0,up:{arc:0,life:0,slow:0},daily:"",adAt:0};
-try { var p = JSON.parse(localStorage.getItem(KEY) || "null"); if (p) { s = Object.assign(s, p); s.up = Object.assign({arc:0,life:0,slow:0}, p.up||{}); } } catch(e){}
-function save(){ try { localStorage.setItem(KEY, JSON.stringify(s)); } catch(e){} }
-var tt; function toast(m){ var t=$("toast"); t.textContent=m; t.classList.add("on"); clearTimeout(tt); tt=setTimeout(function(){t.classList.remove("on");},2600); }
+            <!-- Video/Image Container Card -->
+            <div class="glass-card rounded-3xl p-3 shadow-2xl relative overflow-hidden group">
+                
+                <!-- Purple Ambient Backlight Glow -->
+                <div class="absolute -inset-1 bg-gradient-to-r from-purple-900/40 via-purple-600/30 to-fuchsia-800/40 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-1000"></div>
 
-/* ===== screens ===== */
-function show(id){ ["menu","shop","over","about"].forEach(function(n){ $(n).classList.toggle("on", n===id); }); if (id==="menu") menuStat(); if (id==="shop") renderShop(); }
-function menuStat(){ $("menuStat").textContent = "Best score " + s.best + "   ·   Coins " + s.coins; }
-document.querySelectorAll("[data-back]").forEach(function(b){ b.addEventListener("click", function(){ show("menu"); }); });
-$("goShop").onclick = function(){ show("shop"); };
-$("goAbout").onclick = function(){ show("about"); };
-$("daily").onclick = function(){
-  if (s.daily === today()) { toast("Already claimed today. Come back tomorrow."); return; }
-  s.daily = today(); s.coins += 50; save(); menuStat(); toast("Daily bonus: +50 coins");
-};
+                <!-- 16:9 Media Preview Box -->
+                <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-purple-950/80 border border-purple-800/50 flex items-center justify-center">
+                    
+                    <!-- Locked Thumbnail View -->
+                    <div id="locked-view" class="w-full h-full relative flex items-center justify-center">
+                        <img id="video-thumbnail" src="https://i.ibb.co/rgJpkcb/b5590eff-efb3-4ff7-b791-cd706aea9a6e.jpg" 
+                             alt="Viral Clip Preview" 
+                             class="w-full h-full object-cover filter blur-[6px] scale-105 transition-all duration-700 opacity-80"
+                             onerror="this.src='https://placehold.co/600x337/150d2a/c084fc?text=Viral+Zone+VIP+Locked'">
+                        
+                        <!-- Dark Overlay -->
+                        <div class="absolute inset-0 bg-gradient-to-t from-purple-950 via-purple-950/70 to-transparent"></div>
 
-/* ===== shop ===== */
-var UPS = [
-  {id:"arc",  n:"Wider shield",   d:"Bigger shield arc",           base:60,  g:1.8, max:8},
-  {id:"life", n:"Extra planet shield", d:"+1 starting life",       base:120, g:2.1, max:3},
-  {id:"slow", n:"Longer slow-time", d:"Icy comets slow time longer", base:80, g:1.7, max:6}
-];
-function ucost(u){ return Math.floor(u.base * Math.pow(u.g, s.up[u.id])); }
-function renderShop(){
-  var h = '<p style="margin-bottom:6px">Coins: <b>' + s.coins + '</b></p>';
-  UPS.forEach(function(u){
-    var lv = s.up[u.id], maxed = lv >= u.max, c = ucost(u);
-    h += '<div class="row"><div class="t"><b>' + u.n + ' (level ' + lv + '/' + u.max + ')</b><span>' + u.d + '</span></div>' +
-         '<button class="btn" data-buy="' + u.id + '"' + (maxed || s.coins < c ? " disabled" : "") + '>' + (maxed ? "Max" : c) + '</button></div>';
-  });
-  $("shoplist").innerHTML = h;
-}
-$("shoplist").addEventListener("click", function(e){
-  var b = e.target.closest("[data-buy]"); if (!b) return;
-  var u = UPS.filter(function(x){ return x.id === b.getAttribute("data-buy"); })[0], c = ucost(u);
-  if (s.up[u.id] >= u.max || s.coins < c) return;
-  s.coins -= c; s.up[u.id] += 1; save(); haptic("medium"); renderShop();
-});
+                        <!-- Central Lock Badge -->
+                        <div id="lock-badge-center" class="absolute flex flex-col items-center justify-center text-center p-3">
+                            <div class="w-14 h-14 rounded-full bg-purple-950/90 border border-purple-400/50 flex items-center justify-center mb-2 shadow-xl shadow-purple-900/40 animate-float">
+                                <i class="fas fa-lock text-purple-300 text-xl"></i>
+                            </div>
+                            <span class="text-xs font-bold text-purple-100 tracking-wide uppercase bg-purple-900/80 px-3 py-1 rounded-full border border-purple-600/50 backdrop-blur-md">
+                                Content Locked
+                            </span>
+                        </div>
+                    </div>
 
-/* ===== canvas ===== */
-var cv = $("cv"), ctx = cv.getContext("2d"), w, h, M, cx, cy, dpr;
-function fit(){ dpr = Math.min(2, window.devicePixelRatio || 1); w = cv.clientWidth; h = cv.clientHeight; cv.width = w*dpr; cv.height = h*dpr; ctx.setTransform(dpr,0,0,dpr,0,0); M = Math.min(w,h); cx = w/2; cy = h/2; }
-window.addEventListener("resize", fit); fit();
-var stars = []; for (var i=0;i<70;i++) stars.push({x:Math.random(),y:Math.random(),r:Math.random()*1.4+.3,p:Math.random()*6});
+                    <!-- Unlocked Player View -->
+                    <div id="unlocked-view" class="w-full h-full hidden relative bg-black flex items-center justify-center">
+                        <video id="unlocked-video" class="w-full h-full object-contain" controls poster="https://i.ibb.co/rgJpkcb/b5590eff-efb3-4ff7-b791-cd706aea9a6e.jpg">
+                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
+                            Your browser does not support the video tag.
+                        </video>
+                    </div>
 
-var g = null, target = -Math.PI/2, running = false;
-function lives0(){ return 3 + s.up.life; }
-function start(){
-  g = {score:0,lives:lives0(),time:0,combo:0,comets:[],parts:[],ang:target,slowT:0,spawn:.6,revived:false,doubled:false,earned:0,golds:0,shake:0};
-  running = true; ["menu","shop","over","about"].forEach(function(n){ $(n).classList.remove("on"); }); hud();
-}
-function hud(){
-  $("sc").textContent = g ? g.score : 0;
-  var m = g ? 1 + Math.min(4, Math.floor(g.combo/5)) : 1; $("cmb").textContent = "Combo ×" + m;
-  var hs = ""; if (g) for (var i=0;i<g.lives;i++) hs += "♥"; $("hearts").textContent = hs;
-  $("slow").textContent = g && g.slowT > 0 ? "Slow time " + Math.ceil(g.slowT) + "s" : "";
-}
-function pos(e){ var r = cv.getBoundingClientRect(); target = Math.atan2(e.clientY - r.top - cy, e.clientX - r.left - cx); }
-cv.addEventListener("pointerdown", function(e){ e.preventDefault(); pos(e); });
-cv.addEventListener("pointermove", function(e){ pos(e); });
+                    <!-- Top Left Category Tag -->
+                    <div class="absolute top-3 left-3 z-10 flex items-center space-x-1.5">
+                        <span class="bg-purple-950/80 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-lg">
+                            <i class="fas fa-fire text-amber-300"></i> Trending Clip
+                        </span>
+                    </div>
 
-function burst(x, y, col, n){ for (var i=0;i<n;i++){ var a=Math.random()*6.283, v=40+Math.random()*120; g.parts.push({x:x,y:y,vx:Math.cos(a)*v,vy:Math.sin(a)*v,l:.5,c:col}); } }
-function adiff(a,b){ return Math.atan2(Math.sin(a-b), Math.cos(a-b)); }
+                    <!-- Top Right Lock Status Pill -->
+                    <div class="absolute top-3 right-3 z-10">
+                        <span id="status-pill" class="bg-purple-900/40 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
+                            <i class="fas fa-lock text-[9px]"></i> <span id="status-pill-text">0/4 Ads</span>
+                        </span>
+                    </div>
+                </div>
 
-function spawn(){
-  var r = Math.random(), type = r < .08 ? "gold" : (r < .13 ? "ice" : "rock");
-  var sp = Math.min(.8*M, .17*M + g.time*.0042*M) * (.85 + Math.random()*.35);
-  g.comets.push({a:Math.random()*6.283, r:Math.hypot(w,h)/2 + 24, sp:sp, t:type});
-}
-function update(dt){
-  g.time += dt;
-  var cs = g.slowT > 0 ? .5 : 1; if (g.slowT > 0) g.slowT -= dt;
-  g.spawn -= dt;
-  if (g.spawn <= 0) { spawn(); g.spawn = Math.max(.32, 1.05 - g.time*.011) * (.8 + Math.random()*.5); }
-  var d = adiff(target, g.ang), mx = 9*dt; g.ang += Math.max(-mx, Math.min(mx, d));
-  var R0 = .07*M, Rs = .17*M, half = .35 + .07*s.up.arc;
-  for (var i=g.comets.length-1;i>=0;i--){
-    var c = g.comets[i]; c.r -= c.sp*cs*dt;
-    var x = cx + Math.cos(c.a)*c.r, y = cy + Math.sin(c.a)*c.r;
-    if (c.r <= Rs + 8 && c.r > R0) {
-      if (Math.abs(adiff(c.a, g.ang)) <= half) {
-        g.combo++; var m = 1 + Math.min(4, Math.floor(g.combo/5));
-        g.score += 10*m;
-        if (c.t === "gold") { g.golds++; g.score += 20; }
-        if (c.t === "ice") g.slowT = 4 + s.up.slow;
-        burst(x, y, c.t === "gold" ? "#ffd166" : (c.t === "ice" ? "#7fd8ff" : "#ff7a59"), 10);
-        haptic("light"); g.comets.splice(i,1); continue;
-      }
-    }
-    if (c.r <= R0 + 6) {
-      g.lives--; g.combo = 0; g.shake = .3; burst(x, y, "#ff5a4d", 16); haptic("heavy"); g.comets.splice(i,1);
-      if (g.lives <= 0) { over(); return; }
-    }
-  }
-  for (var j=g.parts.length-1;j>=0;j--){ var q = g.parts[j]; q.x += q.vx*dt; q.y += q.vy*dt; q.l -= dt; if (q.l <= 0) g.parts.splice(j,1); }
-  if (g.shake > 0) g.shake -= dt;
-  hud();
-}
-function over(){
-  running = false;
-  g.earned = Math.floor(g.score/10) + g.golds*5;
-  s.coins += g.earned; s.games++; if (g.score > s.best) s.best = g.score; save();
-  $("oScore").textContent = g.score;
-  $("oInfo").textContent = "Best " + s.best + "  ·  +" + g.earned + " coins";
-  $("adRevive").disabled = false; $("adRevive").hidden = g.revived;
-  $("adDouble").disabled = g.earned <= 0; $("adDouble").hidden = g.doubled;
-  $("over").classList.add("on");
-}
+                <!-- Video Title & Meta Info -->
+                <div class="mt-3 px-1">
+                    <div class="flex items-start justify-between">
+                        <div>
+                            <h2 class="text-sm font-bold text-purple-50 line-clamp-1">Exclusive Unreleased Viral Leak #4092</h2>
+                            <div class="flex items-center space-x-2 mt-1">
+                                <span class="text-[10px] text-purple-300 font-medium">#Viral</span>
+                                <span class="text-[10px] text-fuchsia-300 font-medium">#Trending</span>
+                                <span class="text-[10px] text-purple-400/80 font-medium">#Leak</span>
+                                <span class="text-[10px] text-purple-300/50">• 1.4M views</span>
+                            </div>
+                        </div>
 
-/* ===== drawing ===== */
-var last = 0;
-function draw(t){
-  var dt = Math.min(.05, (t - last)/1000 || 0); last = t;
-  if (running && g) update(dt);
-  ctx.save();
-  var gr = ctx.createRadialGradient(cx, cy, 10, cx, cy, Math.max(w,h)*.7);
-  gr.addColorStop(0, "#1c2250"); gr.addColorStop(1, "#0b0f22");
-  ctx.fillStyle = gr; ctx.fillRect(0,0,w,h);
-  stars.forEach(function(st){ ctx.globalAlpha = .45 + .4*Math.sin(t/900 + st.p); ctx.fillStyle = "#cfd8ff"; ctx.beginPath(); ctx.arc(st.x*w, st.y*h, st.r, 0, 6.283); ctx.fill(); });
-  ctx.globalAlpha = 1;
-  if (g && g.shake > 0) ctx.translate((Math.random()-.5)*8, (Math.random()-.5)*8);
-  var R0 = .07*M, Rs = .17*M;
-  var pg = ctx.createRadialGradient(cx - R0*.3, cy - R0*.3, 2, cx, cy, R0);
-  pg.addColorStop(0, "#7ee0c9"); pg.addColorStop(1, "#1f7d8c");
-  ctx.shadowColor = "#4fd1c5"; ctx.shadowBlur = 24; ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(cx, cy, R0, 0, 6.283); ctx.fill(); ctx.shadowBlur = 0;
-  if (g) {
-    var half = .35 + .07*s.up.arc;
-    ctx.strokeStyle = "rgba(255,122,89,.18)"; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(cx, cy, Rs, 0, 6.283); ctx.stroke();
-    ctx.strokeStyle = "#ff7a59"; ctx.lineWidth = 9; ctx.lineCap = "round"; ctx.shadowColor = "#ff7a59"; ctx.shadowBlur = 14;
-    ctx.beginPath(); ctx.arc(cx, cy, Rs, g.ang - half, g.ang + half); ctx.stroke(); ctx.shadowBlur = 0;
-    g.comets.forEach(function(c){
-      var x = cx + Math.cos(c.a)*c.r, y = cy + Math.sin(c.a)*c.r, col = c.t === "gold" ? "#ffd166" : (c.t === "ice" ? "#7fd8ff" : "#d9dff7");
-      var tx = cx + Math.cos(c.a)*(c.r + 34), ty = cy + Math.sin(c.a)*(c.r + 34);
-      var lg = ctx.createLinearGradient(x, y, tx, ty); lg.addColorStop(0, col); lg.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.strokeStyle = lg; ctx.lineWidth = 6; ctx.lineCap = "round"; ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(tx,ty); ctx.stroke();
-      ctx.fillStyle = col; ctx.beginPath(); ctx.arc(x, y, c.t === "rock" ? 7 : 8, 0, 6.283); ctx.fill();
-    });
-    g.parts.forEach(function(q){ ctx.globalAlpha = Math.max(0, q.l*2); ctx.fillStyle = q.c; ctx.fillRect(q.x-2, q.y-2, 4, 4); });
-    ctx.globalAlpha = 1;
-  }
-  ctx.restore();
-  requestAnimationFrame(draw);
-}
-requestAnimationFrame(draw);
+                        <!-- Like / Dislike Bar -->
+                        <div class="flex items-center space-x-1 bg-purple-950/90 p-1 rounded-xl border border-purple-800/60">
+                            <!-- Like Button -->
+                            <button id="like-btn" onclick="toggleReaction('like')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-purple-100 hover:bg-purple-900/60 transition-all active:scale-95">
+                                <i id="like-icon" class="fa-regular fa-thumbs-up text-xs"></i>
+                                <span id="like-count" class="text-[11px] font-bold">14.2k</span>
+                            </button>
+                            <div class="h-3 w-[1px] bg-purple-800/60"></div>
+                            <!-- Dislike Button -->
+                            <button id="dislike-btn" onclick="toggleReaction('dislike')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-rose-300 hover:bg-purple-900/60 transition-all active:scale-95">
+                                <i id="dislike-icon" class="fa-regular fa-thumbs-down text-xs"></i>
+                                <span id="dislike-count" class="text-[11px] font-bold">128</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-/* ===== optional rewarded ads (AdsGram) ===== */
-var ad = null;
-try { if (window.Adsgram && ADSGRAM_BLOCK_ID.indexOf("YOUR_") !== 0) ad = window.Adsgram.init({ blockId: ADSGRAM_BLOCK_ID }); } catch(e){}
-function showAd(done){
-  if (Date.now() - s.adAt < AD_COOLDOWN_MS) { toast("Please wait a moment before the next ad."); return; }
-  if (!ad) { toast("Ads are not available right now."); return; }
-  ad.show().then(function(r){ if (r && r.done) { s.adAt = Date.now(); done(); save(); } else toast("Watch the full ad to get the bonus."); })
-    .catch(function(){ toast("No ad available right now. Try again soon."); });
-}
-$("adRevive").onclick = function(){
-  showAd(function(){
-    g.revived = true; g.lives = 1; g.comets = []; g.spawn = 1.2;
-    s.coins -= g.earned * (g.doubled ? 2 : 1); g.doubled = false; s.games = Math.max(0, s.games - 1); /* coins are paid again when this run ends */
-    running = true; $("over").classList.remove("on"); hud();
-  });
-};
-$("adDouble").onclick = function(){
-  showAd(function(){ if (g.doubled) return; g.doubled = true; s.coins += g.earned; $("oInfo").textContent = "Best " + s.best + "  ·  +" + (g.earned*2) + " coins"; $("adDouble").hidden = true; toast("Coins doubled"); });
-};
-$("play").onclick = start;
-$("again").onclick = start;
-document.addEventListener("visibilitychange", function(){ if (document.hidden) save(); });
-menuStat();
-})();
-</script>
+            <!-- UNLOCK PROGRESS SECTION -->
+            <div id="unlock-section" class="glass-card rounded-3xl p-4 shadow-xl border border-purple-500/25 relative overflow-hidden">
+                
+                <!-- Inner Gradient Accent -->
+                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-purple-600/15 rounded-full blur-2xl"></div>
+
+                <!-- Header & Progress Count -->
+                <div class="flex items-center justify-between mb-2">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 rounded-lg bg-purple-800/40 border border-purple-400/30 flex items-center justify-center text-purple-300 text-xs">
+                            <i class="fas fa-play-circle"></i>
+                        </div>
+                        <span class="text-xs font-bold text-purple-100">Unlock Progress</span>
+                    </div>
+                    <span id="progress-text" class="text-xs font-extrabold text-purple-300 tracking-wider">0 / 4 ADS</span>
+                </div>
+
+                <!-- Step-by-Step Dots Indicator -->
+                <div class="grid grid-cols-4 gap-2 my-3">
+                    <div id="step-1" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
+                    <div id="step-2" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
+                    <div id="step-3" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
+                    <div id="step-4" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
+                </div>
+
+                <!-- Descriptive Helper Text -->
+                <p id="unlock-status-desc" class="text-[11px] text-purple-300/70 text-center mb-4">
+                    Watch <span class="text-purple-300 font-semibold" id="ads-remaining-count">4 more ads</span> to unlock the viral video link.
+                </p>
+
+                <!-- WATCH AD CTA BUTTON -->
+                <button id="watch-ad-btn" onclick="triggerAd()" class="w-full relative group overflow-hidden rounded-2xl p-[2px] focus:outline-none transition-all duration-300 transform active:scale-95 shadow-lg shadow-purple-900/40">
+                    <span class="absolute inset-0 bg-gradient-to-r from-purple-700 via-purple-500 to-fuchsia-500 rounded-2xl group-hover:opacity-100 transition duration-300"></span>
+                    <div class="relative px-6 py-3.5 bg-purple-950 rounded-[14px] flex items-center justify-center space-x-2 transition duration-300 group-hover:bg-opacity-80">
+                        <i id="btn-icon" class="fas fa-play text-purple-300 text-sm group-hover:scale-110 transition-transform"></i>
+                        <span id="btn-text" class="text-xs font-extrabold text-purple-100 tracking-wide uppercase">
+                            Watch Ad 1/4
+                        </span>
+                        <i class="fas fa-chevron-right text-xs text-purple-400 group-hover:translate-x-1 transition-transform"></i>
+                    </div>
+                </button>
+
+            </div>
+
+            <!-- UNLOCKED ACTION CARD -->
+            <div id="unlocked-action-card" class="glass-card rounded-3xl p-4 shadow-xl border border-purple-400/40 hidden flex-col items-center text-center space-y-3">
+                <div class="w-12 h-12 rounded-full bg-purple-600/30 border border-purple-400/50 flex items-center justify-center text-purple-200 text-xl animate-bounce">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <h3 class="text-sm font-extrabold text-purple-50">Content Unlocked Successfully!</h3>
+                    <p class="text-[11px] text-purple-300/70 mt-0.5">Enjoy your video or copy the direct link below.</p>
+                </div>
+
+                <!-- Direct Copy Link Box -->
+                <div class="w-full flex items-center bg-purple-950 border border-purple-800/80 rounded-xl p-1.5 pl-3">
+                    <input type="text" readonly value="https://viralzone.app/v/exclusive-4092-unlocked" class="bg-transparent text-xs text-purple-200 flex-1 outline-none font-mono">
+                    <button onclick="copyUnlockedLink()" class="px-3 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-lg text-xs font-bold hover:brightness-110 transition active:scale-95 flex items-center gap-1.5 shadow-md">
+                        <i class="fas fa-copy"></i>
+                        <span>Copy</span>
+                    </button>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- FOOTER NAVIGATION BAR -->
+        <footer class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-40">
+            <div class="glass-panel rounded-2xl px-6 py-2.5 flex items-center justify-around border border-purple-800/50 shadow-2xl">
+                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center space-y-1 text-purple-300">
+                    <i class="fas fa-house text-base"></i>
+                    <span class="text-[10px] font-bold">Home</span>
+                </button>
+                <button onclick="switchTab('trending')" id="tab-trending" class="flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200">
+                    <i class="fas fa-fire text-base"></i>
+                    <span class="text-[10px] font-bold">Trending</span>
+                </button>
+                <button onclick="switchTab('profile')" id="tab-profile" class="flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200">
+                    <i class="fas fa-user-gear text-base"></i>
+                    <span class="text-[10px] font-bold">Settings</span>
+                </button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- MOCK AD MODAL (FALLBACK WHEN TESTING OUTSIDE TELEGRAM SDK) -->
+    <div id="ad-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden flex-col items-center justify-between p-6">
+        <!-- Top bar with timer -->
+        <div class="w-full flex items-center justify-between">
+            <span class="text-xs bg-purple-950 text-purple-200 px-3 py-1 rounded-full border border-purple-800 flex items-center gap-1.5">
+                <i class="fas fa-rectangle-ad text-purple-400"></i> Sponsored Advertisement
+            </span>
+            <span id="ad-timer" class="text-xs font-mono font-bold bg-purple-900/40 text-purple-300 border border-purple-500/30 px-3 py-1 rounded-full">
+                Ad ends in 5s
+            </span>
+        </div>
+
+        <!-- Clean Ad Media Placeholder -->
+        <div class="w-full max-w-xs aspect-square glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 border border-purple-500/30 relative overflow-hidden">
+            <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-fuchsia-500 p-[2px] flex items-center justify-center animate-pulse">
+                <div class="w-full h-full bg-purple-950 rounded-[14px] flex items-center justify-center">
+                    <i class="fas fa-rectangle-ad text-2xl text-purple-300"></i>
+                </div>
+            </div>
+            <div>
+                <h4 id="ad-modal-block-title" class="text-base font-extrabold text-purple-100">Video Sponsor Ad</h4>
+                <p class="text-xs text-purple-300/70 mt-1">Please wait for the ad playback to complete to register your progress.</p>
+            </div>
+        </div>
+
+        <!-- Skip / Close Button -->
+        <div class="w-full flex justify-center pb-4">
+            <button id="ad-close-btn" disabled onclick="completeAdWatch()" class="px-6 py-2.5 bg-purple-950 text-purple-400/60 rounded-full text-xs font-bold border border-purple-800/80 opacity-50 cursor-not-allowed transition">
+                Wait <span id="close-timer">5</span>s
+            </button>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC & 4 AD BLOCK INTEGRATION SETUP -->
+    <script>
+        // State Variables
+        let adProgress = 0;
+        const maxAds = 4;
+        let isLiked = false;
+        let isDisliked = false;
+        let likeCount = 1600;
+        let dislikeCount = 98;
+        let adCountdownTimer = null;
+
+        // 4 SPECIFIC AD BLOCK IDs
+        const AD_BLOCK_IDS = {
+            1: "int-58039", // Replace with Block ID 1
+            2: "58040", // Replace with Block ID 2
+            3: "int-58041", // Replace with Block ID 3
+            4: "57735"  // Replace with Block ID 4
+        };
+
+        // Telegram WebApp Initialization
+        let tg = null;
+        if (window.Telegram && window.Telegram.WebApp) {
+            tg = window.Telegram.WebApp;
+            tg.expand();
+            tg.enableClosingConfirmation();
+            if (tg.themeParams && tg.themeParams.bg_color) {
+                document.body.style.backgroundColor = tg.themeParams.bg_color;
+            }
+        }
+
+        // Initialize on window load
+        window.onload = function() {
+            updateUI();
+        };
+
+        // Main Ad Handler matching 1-4 Block IDs
+        function triggerAd() {
+            if (adProgress >= maxAds) {
+                showToast("Video already unlocked!", "fa-check-circle");
+                return;
+            }
+
+            const currentAdStep = adProgress + 1;
+            const currentBlockId = AD_BLOCK_IDS[currentAdStep];
+
+            // If SDK is loaded, call ad logic with specific block ID
+            if (window.Adsgram) {
+                try {
+                    const adController = window.Adsgram.init({ 
+                        blockId: currentBlockId,
+                        debug: false
+                    });
+
+                    adController.show().then((result) => {
+                        onAdCompletedSuccess();
+                    }).catch((error) => {
+                        console.warn(`Ad step ${currentAdStep} fallback:`, error);
+                        showAdSimulator(currentAdStep);
+                    });
+                    return;
+                } catch (e) {
+                    console.log("SDK error fallback:", e);
+                }
+            }
+
+            // Standalone Fallback / Preview Mode
+            showAdSimulator(currentAdStep);
+        }
+
+        // Simulated Ad Overlay for standalone preview
+        function showAdSimulator(step) {
+            const modal = document.getElementById('ad-modal');
+            const closeBtn = document.getElementById('ad-close-btn');
+            const timerText = document.getElementById('ad-timer');
+            const blockTitle = document.getElementById('ad-modal-block-title');
+
+            blockTitle.innerText = `Sponsor Video Ad #${step}`;
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            let timeLeft = 5;
+            closeBtn.disabled = true;
+            closeBtn.className = "px-6 py-2.5 bg-purple-950 text-purple-400/60 rounded-full text-xs font-bold border border-purple-800/80 opacity-50 cursor-not-allowed";
+            closeBtn.innerHTML = `Wait <span id="close-timer">${timeLeft}</span>s`;
+            timerText.innerText = `Ad ends in ${timeLeft}s`;
+
+            clearInterval(adCountdownTimer);
+            adCountdownTimer = setInterval(() => {
+                timeLeft--;
+                if (document.getElementById('close-timer')) {
+                    document.getElementById('close-timer').innerText = timeLeft;
+                }
+                timerText.innerText = `Ad ends in ${timeLeft}s`;
+
+                if (timeLeft <= 0) {
+                    clearInterval(adCountdownTimer);
+                    closeBtn.disabled = false;
+                    closeBtn.className = "px-6 py-2.5 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-full text-xs font-bold shadow-lg animate-pulse cursor-pointer";
+                    closeBtn.innerHTML = `<i class="fas fa-check-circle mr-1"></i> Continue & Verify`;
+                }
+            }, 1000);
+        }
+
+        function completeAdWatch() {
+            const modal = document.getElementById('ad-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            onAdCompletedSuccess();
+        }
+
+        function onAdCompletedSuccess() {
+            adProgress++;
+            showToast(`Ad ${adProgress}/4 Completed!`, "fa-circle-check");
+            updateUI();
+
+            if (adProgress === maxAds) {
+                triggerUnlockAnimation();
+            }
+        }
+
+        // Dynamic UI State Renderer
+        function updateUI() {
+            document.getElementById('progress-text').innerText = `${adProgress} / ${maxAds} ADS`;
+            document.getElementById('status-pill-text').innerText = `${adProgress}/${maxAds} Ads`;
+            
+            const btnText = document.getElementById('btn-text');
+            const remaining = maxAds - adProgress;
+
+            if (adProgress < maxAds) {
+                btnText.innerText = `Watch Ad ${adProgress + 1}/${maxAds}`;
+                document.getElementById('ads-remaining-count').innerText = `${remaining} more ad${remaining > 1 ? 's' : ''}`;
+            } else {
+                btnText.innerText = `VIDEO UNLOCKED`;
+                document.getElementById('badge-status').innerText = "Unlocked";
+                document.getElementById('badge-status').className = "text-xs font-bold text-emerald-400";
+                document.getElementById('status-pill').className = "bg-purple-500/25 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5";
+                document.getElementById('status-pill').innerHTML = `<i class="fas fa-lock-open text-[9px]"></i> Unlocked`;
+            }
+
+            // Update Progress Step Dots
+            for (let i = 1; i <= maxAds; i++) {
+                const step = document.getElementById(`step-${i}`);
+                if (i <= adProgress) {
+                    step.className = "h-2 rounded-full bg-gradient-to-r from-purple-500 to-fuchsia-400 border border-purple-300 shadow-sm shadow-purple-500/50";
+                } else {
+                    step.className = "h-2 rounded-full bg-purple-950/80 border border-purple-800/50";
+                }
+            }
+        }
+
+        // Trigger Content Unlock State
+        function triggerUnlockAnimation() {
+            document.getElementById('locked-view').classList.add('hidden');
+            document.getElementById('unlocked-view').classList.remove('hidden');
+            document.getElementById('unlock-section').classList.add('hidden');
+            document.getElementById('unlocked-action-card').classList.remove('hidden');
+            document.getElementById('unlocked-action-card').classList.add('flex');
+
+            try {
+                confetti({
+                    particleCount: 120,
+                    spread: 80,
+                    origin: { y: 0.6 }
+                });
+            } catch (e) {}
+
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        // Reaction Toggle Handler
+        function toggleReaction(type) {
+            const likeBtn = document.getElementById('like-btn');
+            const dislikeBtn = document.getElementById('dislike-btn');
+            const likeIcon = document.getElementById('like-icon');
+            const dislikeIcon = document.getElementById('dislike-icon');
+
+            if (type === 'like') {
+                if (isLiked) {
+                    isLiked = false;
+                    likeCount--;
+                    likeBtn.classList.remove('text-purple-300');
+                    likeIcon.className = "fa-regular fa-thumbs-up text-xs";
+                } else {
+                    isLiked = true;
+                    likeCount++;
+                    likeBtn.classList.add('text-purple-300');
+                    likeIcon.className = "fa-solid fa-thumbs-up text-xs";
+
+                    if (isDisliked) {
+                        isDisliked = false;
+                        dislikeCount--;
+                        dislikeBtn.classList.remove('text-rose-400');
+                        dislikeIcon.className = "fa-regular fa-thumbs-down text-xs";
+                    }
+                }
+            } else if (type === 'dislike') {
+                if (isDisliked) {
+                    isDisliked = false;
+                    dislikeCount--;
+                    dislikeBtn.classList.remove('text-rose-400');
+                    dislikeIcon.className = "fa-regular fa-thumbs-down text-xs";
+                } else {
+                    isDisliked = true;
+                    dislikeCount++;
+                    dislikeBtn.classList.add('text-rose-400');
+                    dislikeIcon.className = "fa-solid fa-thumbs-down text-xs";
+
+                    if (isLiked) {
+                        isLiked = false;
+                        likeCount--;
+                        likeBtn.classList.remove('text-purple-300');
+                        likeIcon.className = "fa-regular fa-thumbs-up text-xs";
+                    }
+                }
+            }
+
+            document.getElementById('like-count').innerText = formatNumber(likeCount);
+            document.getElementById('dislike-count').innerText = formatNumber(dislikeCount);
+
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.impactOccurred('light');
+            }
+        }
+
+        function formatNumber(num) {
+            return num >= 1000 ? (num / 1000).toFixed(1) + 'k' : num;
+        }
+
+        // Copy Link Action
+        function copyUnlockedLink() {
+            const copyText = "https://viralzone.app/v/exclusive-4092-unlocked";
+            
+            const tempInput = document.createElement("input");
+            tempInput.value = copyText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            showToast("Direct link copied to clipboard!", "fa-check");
+
+            if (tg && tg.HapticFeedback) {
+                tg.HapticFeedback.notificationOccurred('success');
+            }
+        }
+
+        // Bottom Tab Switcher
+        function switchTab(tabName) {
+            const tabs = ['home', 'trending', 'profile'];
+            tabs.forEach(t => {
+                const btn = document.getElementById(`tab-${t}`);
+                if (btn) {
+                    if (t === tabName) {
+                        btn.className = "flex flex-col items-center space-y-1 text-purple-300";
+                    } else {
+                        btn.className = "flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200";
+                    }
+                }
+            });
+        }
+
+        // Custom Toast Helper
+        function showToast(msg, iconClass = "fa-info-circle") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            const toastIcon = document.getElementById('toast-icon');
+
+            toastMsg.innerText = msg;
+            toastIcon.innerHTML = `<i class="fas ${iconClass}"></i>`;
+
+            toast.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none');
+            }, 2500);
+        }
+    </script>
 </body>
-</html>
+  </html>
