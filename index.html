@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Viral Zone - Watch & Unlock</title>
+
+    <!-- Adsgram SDK -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -44,6 +48,7 @@
             }
         }
     </script>
+
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti CDN -->
@@ -207,13 +212,13 @@
                             <!-- Like Button -->
                             <button id="like-btn" onclick="toggleReaction('like')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-purple-100 hover:bg-purple-900/60 transition-all active:scale-95">
                                 <i id="like-icon" class="fa-regular fa-thumbs-up text-xs"></i>
-                                <span id="like-count" class="text-[11px] font-bold">14.2k</span>
+                                <span id="like-count" class="text-[11px] font-bold">1.6k</span>
                             </button>
                             <div class="h-3 w-[1px] bg-purple-800/60"></div>
                             <!-- Dislike Button -->
                             <button id="dislike-btn" onclick="toggleReaction('dislike')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-rose-300 hover:bg-purple-900/60 transition-all active:scale-95">
                                 <i id="dislike-icon" class="fa-regular fa-thumbs-down text-xs"></i>
-                                <span id="dislike-count" class="text-[11px] font-bold">128</span>
+                                <span id="dislike-count" class="text-[11px] font-bold">98</span>
                             </button>
                         </div>
                     </div>
@@ -306,9 +311,8 @@
 
     </div>
 
-    <!-- MOCK AD MODAL (FALLBACK WHEN TESTING OUTSIDE TELEGRAM SDK) -->
+    <!-- MOCK AD MODAL (FALLBACK WHEN TESTING OUTSIDE TELEGRAM SDK / LOCAL ENVIRONMENT) -->
     <div id="ad-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden flex-col items-center justify-between p-6">
-        <!-- Top bar with timer -->
         <div class="w-full flex items-center justify-between">
             <span class="text-xs bg-purple-950 text-purple-200 px-3 py-1 rounded-full border border-purple-800 flex items-center gap-1.5">
                 <i class="fas fa-rectangle-ad text-purple-400"></i> Sponsored Advertisement
@@ -318,7 +322,6 @@
             </span>
         </div>
 
-        <!-- Clean Ad Media Placeholder -->
         <div class="w-full max-w-xs aspect-square glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 border border-purple-500/30 relative overflow-hidden">
             <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-fuchsia-500 p-[2px] flex items-center justify-center animate-pulse">
                 <div class="w-full h-full bg-purple-950 rounded-[14px] flex items-center justify-center">
@@ -331,7 +334,6 @@
             </div>
         </div>
 
-        <!-- Skip / Close Button -->
         <div class="w-full flex justify-center pb-4">
             <button id="ad-close-btn" disabled onclick="completeAdWatch()" class="px-6 py-2.5 bg-purple-950 text-purple-400/60 rounded-full text-xs font-bold border border-purple-800/80 opacity-50 cursor-not-allowed transition">
                 Wait <span id="close-timer">5</span>s
@@ -339,9 +341,8 @@
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC & 4 AD BLOCK INTEGRATION SETUP -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        // State Variables
         let adProgress = 0;
         const maxAds = 4;
         let isLiked = false;
@@ -350,15 +351,15 @@
         let dislikeCount = 98;
         let adCountdownTimer = null;
 
-        // 4 SPECIFIC AD BLOCK IDs
+        // SPECIFIC AD BLOCK IDs
         const AD_BLOCK_IDS = {
-            1: "int-58039", // Replace with Block ID 1
-            2: "58040", // Replace with Block ID 2
-            3: "int-58041", // Replace with Block ID 3
-            4: "57735"  // Replace with Block ID 4
+            1: "int-58039",
+            2: "58040",
+            3: "int-58041",
+            4: "57735"
         };
 
-        // Telegram WebApp Initialization
+        // Telegram WebApp Init
         let tg = null;
         if (window.Telegram && window.Telegram.WebApp) {
             tg = window.Telegram.WebApp;
@@ -369,12 +370,11 @@
             }
         }
 
-        // Initialize on window load
         window.onload = function() {
             updateUI();
         };
 
-        // Main Ad Handler matching 1-4 Block IDs
+        // Main Trigger Function for Watching Ads
         function triggerAd() {
             if (adProgress >= maxAds) {
                 showToast("Video already unlocked!", "fa-check-circle");
@@ -384,7 +384,7 @@
             const currentAdStep = adProgress + 1;
             const currentBlockId = AD_BLOCK_IDS[currentAdStep];
 
-            // If SDK is loaded, call ad logic with specific block ID
+            // Primary Check: Real Adsgram SDK Integration
             if (window.Adsgram) {
                 try {
                     const adController = window.Adsgram.init({ 
@@ -395,20 +395,19 @@
                     adController.show().then((result) => {
                         onAdCompletedSuccess();
                     }).catch((error) => {
-                        console.warn(`Ad step ${currentAdStep} fallback:`, error);
+                        console.warn(`Adsgram step ${currentAdStep} fallback triggered:`, error);
                         showAdSimulator(currentAdStep);
                     });
                     return;
                 } catch (e) {
-                    console.log("SDK error fallback:", e);
+                    console.error("Adsgram init error:", e);
                 }
             }
 
-            // Standalone Fallback / Preview Mode
+            // Fallback: Simulator mode for testing outside Telegram / Adsgram
             showAdSimulator(currentAdStep);
         }
 
-        // Simulated Ad Overlay for standalone preview
         function showAdSimulator(step) {
             const modal = document.getElementById('ad-modal');
             const closeBtn = document.getElementById('ad-close-btn');
@@ -460,7 +459,6 @@
             }
         }
 
-        // Dynamic UI State Renderer
         function updateUI() {
             document.getElementById('progress-text').innerText = `${adProgress} / ${maxAds} ADS`;
             document.getElementById('status-pill-text').innerText = `${adProgress}/${maxAds} Ads`;
@@ -479,7 +477,6 @@
                 document.getElementById('status-pill').innerHTML = `<i class="fas fa-lock-open text-[9px]"></i> Unlocked`;
             }
 
-            // Update Progress Step Dots
             for (let i = 1; i <= maxAds; i++) {
                 const step = document.getElementById(`step-${i}`);
                 if (i <= adProgress) {
@@ -490,7 +487,6 @@
             }
         }
 
-        // Trigger Content Unlock State
         function triggerUnlockAnimation() {
             document.getElementById('locked-view').classList.add('hidden');
             document.getElementById('unlocked-view').classList.remove('hidden');
@@ -511,7 +507,6 @@
             }
         }
 
-        // Reaction Toggle Handler
         function toggleReaction(type) {
             const likeBtn = document.getElementById('like-btn');
             const dislikeBtn = document.getElementById('dislike-btn');
@@ -570,7 +565,6 @@
             return num >= 1000 ? (num / 1000).toFixed(1) + 'k' : num;
         }
 
-        // Copy Link Action
         function copyUnlockedLink() {
             const copyText = "https://viralzone.app/v/exclusive-4092-unlocked";
             
@@ -588,7 +582,6 @@
             }
         }
 
-        // Bottom Tab Switcher
         function switchTab(tabName) {
             const tabs = ['home', 'trending', 'profile'];
             tabs.forEach(t => {
@@ -603,7 +596,6 @@
             });
         }
 
-        // Custom Toast Helper
         function showToast(msg, iconClass = "fa-info-circle") {
             const toast = document.getElementById('toast');
             const toastMsg = document.getElementById('toast-msg');
@@ -622,5 +614,4 @@
         }
     </script>
 </body>
-  </html>
-
+</html>
