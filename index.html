@@ -3,11 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Viral Zone - Watch & Unlock</title>
-
-    <!-- Adsgram SDK -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-
+    <title>Viral Zone - Watch & Join</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -24,38 +20,20 @@
                             violet: '#c084fc',
                             emerald: '#10b981'
                         }
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 2s infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                        'bounce-short': 'bounceShort 0.5s ease-in-out 1',
-                    },
-                    keyframes: {
-                        pulseGlow: {
-                            '0%, 100%': { boxShadow: '0 0 15px rgba(168, 85, 247, 0.4), 0 0 30px rgba(147, 51, 234, 0.2)' },
-                            '50%': { boxShadow: '0 0 25px rgba(192, 132, 252, 0.7), 0 0 50px rgba(168, 85, 247, 0.5)' }
-                        },
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-6px)' }
-                        },
-                        bounceShort: {
-                            '0%, 100%': { transform: 'scale(1)' },
-                            '50%': { transform: 'scale(1.2)' }
-                        }
                     }
                 }
             }
         }
     </script>
-
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Canvas Confetti CDN -->
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <!-- Telegram WebApp JS -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    
+    <!-- Adsgram SDK -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
         
@@ -67,19 +45,6 @@
             -webkit-tap-highlight-color: transparent;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b0716;
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #2e1a47;
-            border-radius: 4px;
-        }
-
-        /* Premium Purple Glassmorphism */
         .glass-panel {
             background: rgba(21, 13, 42, 0.75);
             backdrop-filter: blur(14px);
@@ -91,11 +56,6 @@
             background: linear-gradient(135deg, rgba(29, 17, 56, 0.85) 0%, rgba(15, 8, 30, 0.95) 100%);
             backdrop-filter: blur(18px);
             border: 1px solid rgba(168, 85, 247, 0.18);
-        }
-
-        /* Glowing text effects */
-        .text-glow-purple {
-            text-shadow: 0 0 12px rgba(192, 132, 252, 0.6);
         }
     </style>
 </head>
@@ -125,7 +85,7 @@
                         <span class="bg-gradient-to-r from-purple-200 via-purple-400 to-fuchsia-300 bg-clip-text text-transparent">VIRAL ZONE</span>
                         <span class="text-[10px] bg-purple-500/20 text-purple-300 border border-purple-400/40 px-1.5 py-0.5 rounded-full font-bold uppercase tracking-wider">VIP</span>
                     </h1>
-                    <p class="text-[10px] text-purple-300/60 font-medium">Watch 4 Ads to Unlock Exclusive Video</p>
+                    <p class="text-[10px] text-purple-300/60 font-medium">Watch 4 Ads to Join Exclusive Group</p>
                 </div>
             </div>
 
@@ -143,50 +103,32 @@
 
             <!-- Video/Image Container Card -->
             <div class="glass-card rounded-3xl p-3 shadow-2xl relative overflow-hidden group">
-                
-                <!-- Purple Ambient Backlight Glow -->
-                <div class="absolute -inset-1 bg-gradient-to-r from-purple-900/40 via-purple-600/30 to-fuchsia-800/40 rounded-3xl blur-xl opacity-70 group-hover:opacity-100 transition duration-1000"></div>
-
-                <!-- 16:9 Media Preview Box -->
                 <div class="relative w-full aspect-video rounded-2xl overflow-hidden bg-purple-950/80 border border-purple-800/50 flex items-center justify-center">
                     
-                    <!-- Locked Thumbnail View -->
                     <div id="locked-view" class="w-full h-full relative flex items-center justify-center">
                         <img id="video-thumbnail" src="https://i.ibb.co/rgJpkcb/b5590eff-efb3-4ff7-b791-cd706aea9a6e.jpg" 
                              alt="Viral Clip Preview" 
                              class="w-full h-full object-cover filter blur-[6px] scale-105 transition-all duration-700 opacity-80"
-                             onerror="this.src='https://placehold.co/600x337/150d2a/c084fc?text=Viral+Zone+VIP+Locked'">
+                             onerror="this.src='https://placehold.co/600x337/150d2a/c084fc?text=VIP+Group+Locked'">
                         
-                        <!-- Dark Overlay -->
                         <div class="absolute inset-0 bg-gradient-to-t from-purple-950 via-purple-950/70 to-transparent"></div>
 
-                        <!-- Central Lock Badge -->
                         <div id="lock-badge-center" class="absolute flex flex-col items-center justify-center text-center p-3">
-                            <div class="w-14 h-14 rounded-full bg-purple-950/90 border border-purple-400/50 flex items-center justify-center mb-2 shadow-xl shadow-purple-900/40 animate-float">
+                            <div class="w-14 h-14 rounded-full bg-purple-950/90 border border-purple-400/50 flex items-center justify-center mb-2 shadow-xl shadow-purple-900/40">
                                 <i class="fas fa-lock text-purple-300 text-xl"></i>
                             </div>
                             <span class="text-xs font-bold text-purple-100 tracking-wide uppercase bg-purple-900/80 px-3 py-1 rounded-full border border-purple-600/50 backdrop-blur-md">
-                                Content Locked
+                                Group Link Locked
                             </span>
                         </div>
                     </div>
 
-                    <!-- Unlocked Player View -->
-                    <div id="unlocked-view" class="w-full h-full hidden relative bg-black flex items-center justify-center">
-                        <video id="unlocked-video" class="w-full h-full object-contain" controls poster="https://i.ibb.co/rgJpkcb/b5590eff-efb3-4ff7-b791-cd706aea9a6e.jpg">
-                            <source src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4" type="video/mp4">
-                            Your browser does not support the video tag.
-                        </video>
-                    </div>
-
-                    <!-- Top Left Category Tag -->
                     <div class="absolute top-3 left-3 z-10 flex items-center space-x-1.5">
                         <span class="bg-purple-950/80 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-extrabold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1 shadow-lg">
-                            <i class="fas fa-fire text-amber-300"></i> Trending Clip
+                            <i class="fas fa-fire text-amber-300"></i> Trending Group
                         </span>
                     </div>
 
-                    <!-- Top Right Lock Status Pill -->
                     <div class="absolute top-3 right-3 z-10">
                         <span id="status-pill" class="bg-purple-900/40 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5">
                             <i class="fas fa-lock text-[9px]"></i> <span id="status-pill-text">0/4 Ads</span>
@@ -194,31 +136,26 @@
                     </div>
                 </div>
 
-                <!-- Video Title & Meta Info -->
                 <div class="mt-3 px-1">
                     <div class="flex items-start justify-between">
                         <div>
-                            <h2 class="text-sm font-bold text-purple-50 line-clamp-1">Exclusive Unreleased Viral Leak #4092</h2>
+                            <h2 class="text-sm font-bold text-purple-50 line-clamp-1">Join VIP Telegram Private Community</h2>
                             <div class="flex items-center space-x-2 mt-1">
-                                <span class="text-[10px] text-purple-300 font-medium">#Viral</span>
-                                <span class="text-[10px] text-fuchsia-300 font-medium">#Trending</span>
-                                <span class="text-[10px] text-purple-400/80 font-medium">#Leak</span>
-                                <span class="text-[10px] text-purple-300/50">• 1.4M views</span>
+                                <span class="text-[10px] text-purple-300 font-medium">#Telegram</span>
+                                <span class="text-[10px] text-fuchsia-300 font-medium">#VIP</span>
+                                <span class="text-[10px] text-purple-300/50">• 1.6k Members</span>
                             </div>
                         </div>
 
-                        <!-- Like / Dislike Bar -->
                         <div class="flex items-center space-x-1 bg-purple-950/90 p-1 rounded-xl border border-purple-800/60">
-                            <!-- Like Button -->
-                            <button id="like-btn" onclick="toggleReaction('like')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-purple-100 hover:bg-purple-900/60 transition-all active:scale-95">
+                            <button id="like-btn" onclick="toggleReaction('like')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-purple-100 transition-all active:scale-95">
                                 <i id="like-icon" class="fa-regular fa-thumbs-up text-xs"></i>
-                                <span id="like-count" class="text-[11px] font-bold">1.6k</span>
+                                <span id="like-count" class="text-[11px] font-bold">14.2k</span>
                             </button>
                             <div class="h-3 w-[1px] bg-purple-800/60"></div>
-                            <!-- Dislike Button -->
-                            <button id="dislike-btn" onclick="toggleReaction('dislike')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-rose-300 hover:bg-purple-900/60 transition-all active:scale-95">
+                            <button id="dislike-btn" onclick="toggleReaction('dislike')" class="flex items-center space-x-1 px-2.5 py-1 rounded-lg text-purple-300 hover:text-rose-300 transition-all active:scale-95">
                                 <i id="dislike-icon" class="fa-regular fa-thumbs-down text-xs"></i>
-                                <span id="dislike-count" class="text-[11px] font-bold">98</span>
+                                <span id="dislike-count" class="text-[11px] font-bold">128</span>
                             </button>
                         </div>
                     </div>
@@ -227,11 +164,6 @@
 
             <!-- UNLOCK PROGRESS SECTION -->
             <div id="unlock-section" class="glass-card rounded-3xl p-4 shadow-xl border border-purple-500/25 relative overflow-hidden">
-                
-                <!-- Inner Gradient Accent -->
-                <div class="absolute -right-10 -bottom-10 w-32 h-32 bg-purple-600/15 rounded-full blur-2xl"></div>
-
-                <!-- Header & Progress Count -->
                 <div class="flex items-center justify-between mb-2">
                     <div class="flex items-center space-x-2">
                         <div class="w-7 h-7 rounded-lg bg-purple-800/40 border border-purple-400/30 flex items-center justify-center text-purple-300 text-xs">
@@ -242,7 +174,6 @@
                     <span id="progress-text" class="text-xs font-extrabold text-purple-300 tracking-wider">0 / 4 ADS</span>
                 </div>
 
-                <!-- Step-by-Step Dots Indicator -->
                 <div class="grid grid-cols-4 gap-2 my-3">
                     <div id="step-1" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
                     <div id="step-2" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
@@ -250,108 +181,95 @@
                     <div id="step-4" class="h-2 rounded-full bg-purple-950/80 border border-purple-800/50 transition-all duration-500"></div>
                 </div>
 
-                <!-- Descriptive Helper Text -->
                 <p id="unlock-status-desc" class="text-[11px] text-purple-300/70 text-center mb-4">
-                    Watch <span class="text-purple-300 font-semibold" id="ads-remaining-count">4 more ads</span> to unlock the viral video link.
+                    Watch <span class="text-purple-300 font-semibold" id="ads-remaining-count">4 more ads</span> to unlock the VIP Group link.
                 </p>
 
-                <!-- WATCH AD CTA BUTTON -->
+                <!-- WATCH AD BUTTON -->
                 <button id="watch-ad-btn" onclick="triggerAd()" class="w-full relative group overflow-hidden rounded-2xl p-[2px] focus:outline-none transition-all duration-300 transform active:scale-95 shadow-lg shadow-purple-900/40">
-                    <span class="absolute inset-0 bg-gradient-to-r from-purple-700 via-purple-500 to-fuchsia-500 rounded-2xl group-hover:opacity-100 transition duration-300"></span>
+                    <span class="absolute inset-0 bg-gradient-to-r from-purple-700 via-purple-500 to-fuchsia-500 rounded-2xl"></span>
                     <div class="relative px-6 py-3.5 bg-purple-950 rounded-[14px] flex items-center justify-center space-x-2 transition duration-300 group-hover:bg-opacity-80">
-                        <i id="btn-icon" class="fas fa-play text-purple-300 text-sm group-hover:scale-110 transition-transform"></i>
+                        <i id="btn-icon" class="fas fa-play text-purple-300 text-sm"></i>
                         <span id="btn-text" class="text-xs font-extrabold text-purple-100 tracking-wide uppercase">
                             Watch Ad 1/4
                         </span>
-                        <i class="fas fa-chevron-right text-xs text-purple-400 group-hover:translate-x-1 transition-transform"></i>
+                        <i class="fas fa-chevron-right text-xs text-purple-400"></i>
                     </div>
                 </button>
-
             </div>
 
-            <!-- UNLOCKED ACTION CARD -->
-            <div id="unlocked-action-card" class="glass-card rounded-3xl p-4 shadow-xl border border-purple-400/40 hidden flex-col items-center text-center space-y-3">
-                <div class="w-12 h-12 rounded-full bg-purple-600/30 border border-purple-400/50 flex items-center justify-center text-purple-200 text-xl animate-bounce">
-                    <i class="fas fa-check-circle"></i>
+            <!-- UNLOCKED JOIN GROUP CARD (SHOWS AFTER 4 ADS) -->
+            <div id="unlocked-action-card" class="glass-card rounded-3xl p-5 shadow-xl border border-purple-400/40 hidden flex-col items-center text-center space-y-4">
+                <div class="w-14 h-14 rounded-full bg-purple-600/30 border border-purple-400/50 flex items-center justify-center text-purple-200 text-2xl animate-bounce">
+                    <i class="fab fa-telegram"></i>
                 </div>
                 <div>
-                    <h3 class="text-sm font-extrabold text-purple-50">Content Unlocked Successfully!</h3>
-                    <p class="text-[11px] text-purple-300/70 mt-0.5">Enjoy your video or copy the direct link below.</p>
+                    <h3 class="text-base font-extrabold text-purple-50">Congratulations! Link Unlocked</h3>
+                    <p class="text-xs text-purple-300/70 mt-1">Click the button below to join our private Telegram group.</p>
                 </div>
 
-                <!-- Direct Copy Link Box -->
-                <div class="w-full flex items-center bg-purple-950 border border-purple-800/80 rounded-xl p-1.5 pl-3">
-                    <input type="text" readonly value="https://viralzone.app/v/exclusive-4092-unlocked" class="bg-transparent text-xs text-purple-200 flex-1 outline-none font-mono">
-                    <button onclick="copyUnlockedLink()" class="px-3 py-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-lg text-xs font-bold hover:brightness-110 transition active:scale-95 flex items-center gap-1.5 shadow-md">
-                        <i class="fas fa-copy"></i>
-                        <span>Copy</span>
-                    </button>
-                </div>
+                <!-- DIRECT TELEGRAM JOIN BUTTON -->
+                <button onclick="redirectToGroup()" class="w-full py-4 bg-gradient-to-r from-purple-600 via-fuchsia-600 to-purple-500 text-white rounded-2xl text-sm font-extrabold hover:brightness-110 transition active:scale-95 flex items-center justify-center space-x-2 shadow-lg shadow-purple-900/50 uppercase tracking-wider">
+                    <i class="fab fa-telegram-plane text-lg"></i>
+                    <span>Join Telegram Group</span>
+                </button>
             </div>
 
         </main>
 
-        <!-- FOOTER NAVIGATION BAR -->
+        <!-- FOOTER NAVIGATION -->
         <footer class="fixed bottom-3 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-md z-40">
             <div class="glass-panel rounded-2xl px-6 py-2.5 flex items-center justify-around border border-purple-800/50 shadow-2xl">
-                <button onclick="switchTab('home')" id="tab-home" class="flex flex-col items-center space-y-1 text-purple-300">
+                <button class="flex flex-col items-center space-y-1 text-purple-300">
                     <i class="fas fa-house text-base"></i>
                     <span class="text-[10px] font-bold">Home</span>
                 </button>
-                <button onclick="switchTab('trending')" id="tab-trending" class="flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200">
+                <button class="flex flex-col items-center space-y-1 text-purple-400/50">
                     <i class="fas fa-fire text-base"></i>
                     <span class="text-[10px] font-bold">Trending</span>
-                </button>
-                <button onclick="switchTab('profile')" id="tab-profile" class="flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200">
-                    <i class="fas fa-user-gear text-base"></i>
-                    <span class="text-[10px] font-bold">Settings</span>
                 </button>
             </div>
         </footer>
 
     </div>
 
-    <!-- MOCK AD MODAL (FALLBACK WHEN TESTING OUTSIDE TELEGRAM SDK / LOCAL ENVIRONMENT) -->
+    <!-- MOCK AD MODAL -->
     <div id="ad-modal" class="fixed inset-0 z-50 bg-black/95 backdrop-blur-md hidden flex-col items-center justify-between p-6">
         <div class="w-full flex items-center justify-between">
-            <span class="text-xs bg-purple-950 text-purple-200 px-3 py-1 rounded-full border border-purple-800 flex items-center gap-1.5">
-                <i class="fas fa-rectangle-ad text-purple-400"></i> Sponsored Advertisement
+            <span class="text-xs bg-purple-950 text-purple-200 px-3 py-1 rounded-full border border-purple-800">
+                Sponsored Ad
             </span>
             <span id="ad-timer" class="text-xs font-mono font-bold bg-purple-900/40 text-purple-300 border border-purple-500/30 px-3 py-1 rounded-full">
                 Ad ends in 5s
             </span>
         </div>
 
-        <div class="w-full max-w-xs aspect-square glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 border border-purple-500/30 relative overflow-hidden">
+        <div class="w-full max-w-xs aspect-square glass-card rounded-3xl p-6 flex flex-col items-center justify-center text-center space-y-4 border border-purple-500/30">
             <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-purple-600 to-fuchsia-500 p-[2px] flex items-center justify-center animate-pulse">
                 <div class="w-full h-full bg-purple-950 rounded-[14px] flex items-center justify-center">
                     <i class="fas fa-rectangle-ad text-2xl text-purple-300"></i>
                 </div>
             </div>
             <div>
-                <h4 id="ad-modal-block-title" class="text-base font-extrabold text-purple-100">Video Sponsor Ad</h4>
-                <p class="text-xs text-purple-300/70 mt-1">Please wait for the ad playback to complete to register your progress.</p>
+                <h4 id="ad-modal-block-title" class="text-base font-extrabold text-purple-100">Sponsor Video Ad</h4>
+                <p class="text-xs text-purple-300/70 mt-1">Watch full ad to register progress.</p>
             </div>
         </div>
 
         <div class="w-full flex justify-center pb-4">
-            <button id="ad-close-btn" disabled onclick="completeAdWatch()" class="px-6 py-2.5 bg-purple-950 text-purple-400/60 rounded-full text-xs font-bold border border-purple-800/80 opacity-50 cursor-not-allowed transition">
+            <button id="ad-close-btn" disabled onclick="completeAdWatch()" class="px-6 py-2.5 bg-purple-950 text-purple-400/60 rounded-full text-xs font-bold border border-purple-800/80 opacity-50 cursor-not-allowed">
                 Wait <span id="close-timer">5</span>s
             </button>
         </div>
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
-        let adProgress = 0;
-        const maxAds = 4;
-        let isLiked = false;
-        let isDisliked = false;
-        let likeCount = 1600;
-        let dislikeCount = 98;
-        let adCountdownTimer = null;
+        // ----------------------------------------------------
+        // 1. ഇവിടെ നിങ്ങളുടെ ടെലിഗ്രാം ഗ്രൂപ്പ് ലിങ്ക് കൊടുക്കുക
+        // ----------------------------------------------------
+        const TELEGRAM_GROUP_LINK = "https://t.me/+FyeN4Ugl5jk4ZWM1";
 
-        // SPECIFIC AD BLOCK IDs
+        // 4 AD BLOCK IDs
         const AD_BLOCK_IDS = {
             1: "int-58039",
             2: "58040",
@@ -359,32 +277,33 @@
             4: "57735"
         };
 
-        // Telegram WebApp Init
+        let adProgress = 0;
+        const maxAds = 4;
+        let isLiked = false;
+        let isDisliked = false;
+        let likeCount = 14200;
+        let dislikeCount = 128;
+        let adCountdownTimer = null;
+
         let tg = null;
         if (window.Telegram && window.Telegram.WebApp) {
             tg = window.Telegram.WebApp;
             tg.expand();
-            tg.enableClosingConfirmation();
-            if (tg.themeParams && tg.themeParams.bg_color) {
-                document.body.style.backgroundColor = tg.themeParams.bg_color;
-            }
         }
 
         window.onload = function() {
             updateUI();
         };
 
-        // Main Trigger Function for Watching Ads
         function triggerAd() {
             if (adProgress >= maxAds) {
-                showToast("Video already unlocked!", "fa-check-circle");
+                showToast("Already unlocked!", "fa-check-circle");
                 return;
             }
 
             const currentAdStep = adProgress + 1;
             const currentBlockId = AD_BLOCK_IDS[currentAdStep];
 
-            // Primary Check: Real Adsgram SDK Integration
             if (window.Adsgram) {
                 try {
                     const adController = window.Adsgram.init({ 
@@ -392,19 +311,18 @@
                         debug: false
                     });
 
-                    adController.show().then((result) => {
+                    adController.show().then(() => {
                         onAdCompletedSuccess();
                     }).catch((error) => {
-                        console.warn(`Adsgram step ${currentAdStep} fallback triggered:`, error);
+                        console.warn(`Ad step ${currentAdStep} fallback:`, error);
                         showAdSimulator(currentAdStep);
                     });
                     return;
                 } catch (e) {
-                    console.error("Adsgram init error:", e);
+                    console.log("SDK error fallback:", e);
                 }
             }
 
-            // Fallback: Simulator mode for testing outside Telegram / Adsgram
             showAdSimulator(currentAdStep);
         }
 
@@ -470,11 +388,9 @@
                 btnText.innerText = `Watch Ad ${adProgress + 1}/${maxAds}`;
                 document.getElementById('ads-remaining-count').innerText = `${remaining} more ad${remaining > 1 ? 's' : ''}`;
             } else {
-                btnText.innerText = `VIDEO UNLOCKED`;
+                btnText.innerText = `UNLOCKED`;
                 document.getElementById('badge-status').innerText = "Unlocked";
                 document.getElementById('badge-status').className = "text-xs font-bold text-emerald-400";
-                document.getElementById('status-pill').className = "bg-purple-500/25 backdrop-blur-md border border-purple-400/40 text-purple-200 text-[10px] font-bold px-2.5 py-1 rounded-full flex items-center gap-1.5";
-                document.getElementById('status-pill').innerHTML = `<i class="fas fa-lock-open text-[9px]"></i> Unlocked`;
             }
 
             for (let i = 1; i <= maxAds; i++) {
@@ -488,8 +404,6 @@
         }
 
         function triggerUnlockAnimation() {
-            document.getElementById('locked-view').classList.add('hidden');
-            document.getElementById('unlocked-view').classList.remove('hidden');
             document.getElementById('unlock-section').classList.add('hidden');
             document.getElementById('unlocked-action-card').classList.remove('hidden');
             document.getElementById('unlocked-action-card').classList.add('flex');
@@ -505,6 +419,18 @@
             if (tg && tg.HapticFeedback) {
                 tg.HapticFeedback.notificationOccurred('success');
             }
+
+            // 4 ആഡുകളും കണ്ടു കഴിഞ്ഞാൽ സ്വയം ഡയറക്റ്റ് റീഡയറക്ട് വേണമെങ്കിൽ താഴെയുള്ള വരി ഉപയോഗിക്കാം:
+            // setTimeout(redirectToGroup, 1500);
+        }
+
+        // ടെലിഗ്രാം ഗ്രൂപ്പിലേക്ക് പോകുന്ന ഫംഗ്ഷൻ
+        function redirectToGroup() {
+            if (tg && tg.openTelegramLink) {
+                tg.openTelegramLink(TELEGRAM_GROUP_LINK);
+            } else {
+                window.location.href = TELEGRAM_GROUP_LINK;
+            }
         }
 
         function toggleReaction(type) {
@@ -517,18 +443,14 @@
                 if (isLiked) {
                     isLiked = false;
                     likeCount--;
-                    likeBtn.classList.remove('text-purple-300');
                     likeIcon.className = "fa-regular fa-thumbs-up text-xs";
                 } else {
                     isLiked = true;
                     likeCount++;
-                    likeBtn.classList.add('text-purple-300');
                     likeIcon.className = "fa-solid fa-thumbs-up text-xs";
-
                     if (isDisliked) {
                         isDisliked = false;
                         dislikeCount--;
-                        dislikeBtn.classList.remove('text-rose-400');
                         dislikeIcon.className = "fa-regular fa-thumbs-down text-xs";
                     }
                 }
@@ -536,18 +458,14 @@
                 if (isDisliked) {
                     isDisliked = false;
                     dislikeCount--;
-                    dislikeBtn.classList.remove('text-rose-400');
                     dislikeIcon.className = "fa-regular fa-thumbs-down text-xs";
                 } else {
                     isDisliked = true;
                     dislikeCount++;
-                    dislikeBtn.classList.add('text-rose-400');
                     dislikeIcon.className = "fa-solid fa-thumbs-down text-xs";
-
                     if (isLiked) {
                         isLiked = false;
                         likeCount--;
-                        likeBtn.classList.remove('text-purple-300');
                         likeIcon.className = "fa-regular fa-thumbs-up text-xs";
                     }
                 }
@@ -555,45 +473,10 @@
 
             document.getElementById('like-count').innerText = formatNumber(likeCount);
             document.getElementById('dislike-count').innerText = formatNumber(dislikeCount);
-
-            if (tg && tg.HapticFeedback) {
-                tg.HapticFeedback.impactOccurred('light');
-            }
         }
 
         function formatNumber(num) {
             return num >= 1000 ? (num / 1000).toFixed(1) + 'k' : num;
-        }
-
-        function copyUnlockedLink() {
-            const copyText = "https://viralzone.app/v/exclusive-4092-unlocked";
-            
-            const tempInput = document.createElement("input");
-            tempInput.value = copyText;
-            document.body.appendChild(tempInput);
-            tempInput.select();
-            document.execCommand("copy");
-            document.body.removeChild(tempInput);
-
-            showToast("Direct link copied to clipboard!", "fa-check");
-
-            if (tg && tg.HapticFeedback) {
-                tg.HapticFeedback.notificationOccurred('success');
-            }
-        }
-
-        function switchTab(tabName) {
-            const tabs = ['home', 'trending', 'profile'];
-            tabs.forEach(t => {
-                const btn = document.getElementById(`tab-${t}`);
-                if (btn) {
-                    if (t === tabName) {
-                        btn.className = "flex flex-col items-center space-y-1 text-purple-300";
-                    } else {
-                        btn.className = "flex flex-col items-center space-y-1 text-purple-400/50 hover:text-purple-200";
-                    }
-                }
-            });
         }
 
         function showToast(msg, iconClass = "fa-info-circle") {
